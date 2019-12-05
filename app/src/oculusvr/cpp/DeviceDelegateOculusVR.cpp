@@ -955,12 +955,14 @@ struct DeviceDelegateOculusVR::State {
                                          controllerName, beamTransform);
             controller->SetButtonCount(controllerState.index, 6);
             controller->SetHapticCount(controllerState.index, 1);
+            controller->SetProfile(controllerState.index, "oculus-touch-v2");
           } else {
             // Oculus Go only has one kind of controller model.
             controller->CreateController(controllerState.index, 0, "Oculus Go Controller");
             controller->SetButtonCount(controllerState.index, 2);
             // Oculus Go has no haptic feedback.
             controller->SetHapticCount(controllerState.index, 0);
+            controller->SetProfile(controllerState.index, "oculus-go");
           }
           controllerState.created = true;
         }
@@ -1069,6 +1071,16 @@ struct DeviceDelegateOculusVR::State {
         // This is always false in Oculus Browser.
         const bool thumbRest = false;
         controller->SetButtonState(controllerState.index, ControllerDelegate::BUTTON_OTHERS, 5, thumbRest, thumbRest);
+
+        if (gripPressed) {
+          if (renderMode == device::RenderMode::Immersive) {
+            controller->SetSqueezeActionStart(controllerState.index);
+          } else {
+            controller->SetSqueezeActionStop(controllerState.index);
+          }
+        } else {
+          controller->SetSqueezeActionStop(controllerState.index);
+        }
       } else {
         triggerPressed = (controllerState.inputState.Buttons & ovrButton_A) != 0;
         triggerTouched = triggerPressed;
@@ -1098,6 +1110,17 @@ struct DeviceDelegateOculusVR::State {
       controller->SetButtonState(controllerState.index, ControllerDelegate::BUTTON_TOUCHPAD, 0, trackpadPressed, trackpadTouched);
 
       controller->SetAxes(controllerState.index, axes, kNumAxes);
+
+      if (triggerPressed) {
+        if (renderMode == device::RenderMode::Immersive) {
+          controller->SetSelectActionStart(controllerState.index);
+        }
+        else {
+          controller->SetSelectActionStop(controllerState.index);
+        }
+      } else {
+        controller->SetSelectActionStop(controllerState.index);
+      }
       if (controller->GetHapticCount(controllerState.index)) {
         UpdateHaptics(controllerState);
       }

@@ -873,6 +873,9 @@ BrowserWorld::Draw() {
   m.externalVR->PullBrowserState();
   m.externalVR->SetHapticState(m.controllers);
 
+  const uint64_t frameId = m.externalVR->GetFrameId();
+  m.controllers->SetFrameId(frameId);
+
   m.CheckExitImmersive();
   if (m.splashAnimation) {
     DrawSplashAnimation();

@@ -65,6 +65,11 @@ Controller::operator=(const Controller& aController) {
   leftHanded = aController.leftHanded;
   inDeadZone = aController.inDeadZone;
   lastHoverEvent = aController.lastHoverEvent;
+  profile = aController.profile;
+  selectActionStartFrameId = aController.selectActionStartFrameId;
+  selectActionStartFrameId = aController.selectActionStopFrameId;
+  squeezeActionStartFrameId = aController.squeezeActionStartFrameId;
+  squeezeActionStopFrameId = aController.squeezeActionStopFrameId;
   return *this;
 }
 
@@ -102,6 +107,10 @@ Controller::Reset() {
   leftHanded = false;
   inDeadZone = true;
   lastHoverEvent = 0.0;
+  selectActionStartFrameId = 0;
+  selectActionStopFrameId = 0;
+  squeezeActionStartFrameId = 0;
+  squeezeActionStopFrameId = 0;
 }
 
 vrb::Vector Controller::StartPoint() const {

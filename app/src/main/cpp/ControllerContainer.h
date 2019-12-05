@@ -47,12 +47,18 @@ public:
   uint32_t GetHapticCount(const int32_t aControllerIndex) override;
   void SetHapticFeedback(const int32_t aControllerIndex, const uint64_t aInputFrameID, const float aPulseDuration, const float aPulseIntensity) override;
   void GetHapticFeedback(const int32_t aControllerIndex, uint64_t &aInputFrameID, float& aPulseDuration, float& aPulseIntensity) override;
+  void SetProfile(const int32_t aControllerIndex, const std::string& aProfile) override;
+  void SetSelectActionStart(const int32_t aControllerIndex) override;
+  void SetSelectActionStop(const int32_t aControllerIndex) override;
+  void SetSqueezeActionStart(const int32_t aControllerIndex) override;
+  void SetSqueezeActionStop(const int32_t aControllerIndex) override;
   void SetLeftHanded(const int32_t aControllerIndex, const bool aLeftHanded) override;
   void SetTouchPosition(const int32_t aControllerIndex, const float aTouchX, const float aTouchY) override;
   void EndTouch(const int32_t aControllerIndex) override;
   void SetScrolledDelta(const int32_t aControllerIndex, const float aScrollDeltaX, const float aScrollDeltaY) override;
   void SetPointerColor(const vrb::Color& color) const;
   void SetVisible(const bool aVisible);
+  void SetFrameId(const uint64_t aFrameId);
 protected:
   struct State;
   ControllerContainer(State& aState, vrb::CreationContextPtr& aContext);

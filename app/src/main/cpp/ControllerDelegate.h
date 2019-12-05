@@ -12,6 +12,7 @@
 #include "GestureDelegate.h"
 
 #include <memory>
+#include <string>
 
 namespace crow {
 
@@ -46,6 +47,11 @@ public:
   virtual uint32_t GetHapticCount(const int32_t aControllerIndex) = 0;
   virtual void SetHapticFeedback(const int32_t aControllerIndex, const uint64_t aInputFrameID, const float aPulseDuration, const float aPulseIntensity) = 0;
   virtual void GetHapticFeedback(const int32_t aControllerIndex, uint64_t & aInputFrameID, float& aPulseDuration, float& aPulseIntensity) = 0;
+  virtual void SetProfile(const int32_t aControllerIndex, const std::string& aProfile) = 0;
+  virtual void SetSelectActionStart(const int32_t aControllerIndex) = 0;
+  virtual void SetSelectActionStop(const int32_t aControllerIndex) = 0;
+  virtual void SetSqueezeActionStart(const int32_t aControllerIndex) = 0;
+  virtual void SetSqueezeActionStop(const int32_t aControllerIndex) = 0;
   virtual void SetLeftHanded(const int32_t aControllerIndex, const bool aLeftHanded) = 0;
   virtual void SetTouchPosition(const int32_t aControllerIndex, const float aTouchX, const float aTouchY) = 0;
   virtual void EndTouch(const int32_t aControllerIndex) = 0;
