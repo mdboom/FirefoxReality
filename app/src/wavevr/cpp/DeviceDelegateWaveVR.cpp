@@ -266,6 +266,7 @@ struct DeviceDelegateWaveVR::State {
     delegate->CreateController(aController.index, aController.is6DoF ? 1 : 0, aController.is6DoF ? "HTC Vive Focus Plus Controller" : "HTC Vive Focus Controller", transform);
     delegate->SetLeftHanded(aController.index, aController.hand == ElbowModel::HandEnum::Left);
     delegate->SetHapticCount(aController.index, 1);
+    delegate->SetProfile(aController.index, aController.is6DoF ? "htc-focus-plus" : "htc-focus");
     aController.created = true;
     aController.enabled = false;
   }
@@ -310,7 +311,7 @@ struct DeviceDelegateWaveVR::State {
 
       delegate->SetVisible(controller.index, !WVR_IsInputFocusCapturedBySystem());
 
-      const bool bumperPressed =  (controller.is6DoF) ? WVR_GetInputButtonState(controller.type, WVR_InputId_Alias1_Trigger)
+      const bool bumperPressed = (controller.is6DoF) ? WVR_GetInputButtonState(controller.type, WVR_InputId_Alias1_Trigger)
                                   : WVR_GetInputButtonState(controller.type, WVR_InputId_Alias1_Digital_Trigger);
       const bool touchpadPressed = WVR_GetInputButtonState(controller.type, WVR_InputId_Alias1_Touchpad);
       const bool touchpadTouched = WVR_GetInputTouchState(controller.type, WVR_InputId_Alias1_Touchpad);
@@ -338,8 +339,26 @@ struct DeviceDelegateWaveVR::State {
                                    gripPressed);
           controller.gripPressedCount = 0;
         }
+        if (gripPressed) {
+          if (renderMode == device::RenderMode::Immersive) {
+            delegate->SetSqueezeActionStart(controller.index);
+          } else {
+            delegate->SetSqueezeActionStop(controller.index);
+          }
+        } else {
+          delegate->SetSqueezeActionStop(controller.index);
+        }
       }
 
+      if (bumperPressed) {
+        if (renderMode == device::RenderMode::Immersive) {
+          delegate->SetSelectActionStart(controller.index);
+        } else {
+          delegate->SetSelectActionStop(controller.index);
+        }
+      } else {
+        delegate->SetSelectActionStop(controller.index);
+      }
       delegate->SetButtonState(controller.index, ControllerDelegate::BUTTON_APP, -1, menuPressed, menuPressed);
 
       const int32_t kNumAxes = 2;
