@@ -29,7 +29,9 @@ public interface KeyboardInterface {
         public String composing;
     }
     @NonNull CustomKeyboard getAlphabeticKeyboard();
+    float getKeyboardTranslateYInWorld();
     float getAlphabeticKeyboardWidth();
+    float getAlphabeticKeyboardHeight();
     default @Nullable CustomKeyboard getSymbolsKeyboard() { return null; }
     default @Nullable CandidatesResult getCandidates(String aComposingText) { return null; }
     default @Nullable String overrideAddText(String aTextBeforeCursor, String aNextText) { return null; }

@@ -49,8 +49,19 @@ public abstract class BaseKeyboard implements KeyboardInterface {
         return mContext.getString(R.string.keyboard_mode_change);
     }
 
+    @Override
+    public float getKeyboardTranslateYInWorld() {
+        return WidgetPlacement.unitFromMeters(mContext, R.dimen.keyboard_y);
+    }
+
+    @Override
     public float getAlphabeticKeyboardWidth() {
         return WidgetPlacement.dpDimension(mContext, R.dimen.keyboard_alphabetic_width);
+    }
+
+    @Override
+    public float getAlphabeticKeyboardHeight() {
+        return WidgetPlacement.dpDimension(mContext, R.dimen.keyboard_height);
     }
 
     @Override

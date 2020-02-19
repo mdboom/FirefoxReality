@@ -10,6 +10,7 @@ import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
 import org.mozilla.vrbrowser.R;
 import org.mozilla.vrbrowser.input.CustomKeyboard;
+import org.mozilla.vrbrowser.ui.widgets.WidgetPlacement;
 import org.mozilla.vrbrowser.utils.StringUtils;
 import org.mozilla.vrbrowser.utils.SystemUtils;
 
@@ -44,7 +45,7 @@ public class ChineseZhuyinKeyboard extends BaseKeyboard {
     @Override
     public CustomKeyboard getAlphabeticKeyboard() {
         if (mKeyboard == null) {
-            mKeyboard = new CustomKeyboard(mContext.getApplicationContext(), R.xml.keyboard_zhuyin);
+            mKeyboard = new CustomKeyboard(mContext.getApplicationContext(), R.xml.keyboard_qwerty_zhuyin);
             loadDatabase();
         }
         return mKeyboard;
@@ -141,6 +142,21 @@ public class ChineseZhuyinKeyboard extends BaseKeyboard {
     }
 
     @Override
+    public float getKeyboardTranslateYInWorld() {
+        return WidgetPlacement.unitFromMeters(mContext, R.dimen.zhuyin_keyboard_y);
+    }
+
+    @Override
+    public float getAlphabeticKeyboardWidth() {
+        return WidgetPlacement.dpDimension(mContext, R.dimen.keyboard_alphabetic_width_zhuyin);
+    }
+
+    @Override
+    public float getAlphabeticKeyboardHeight() {
+        return WidgetPlacement.dpDimension(mContext, R.dimen.keyboard_zhuyin_height);
+    }
+
+    @Override
     public String getKeyboardTitle() {
         return StringUtils.getStringByLocale(mContext, R.string.settings_language_traditional_chinese, getLocale());
     }
@@ -218,7 +234,6 @@ public class ChineseZhuyinKeyboard extends BaseKeyboard {
     }
 
     private void addExtraKeyMaps() {
-//        List<Key> keys = mKeyboard.getKeys();
         String s =  Character.toString((char)0x3105);
         String aa = findLabelFromKey(0x3105);
 

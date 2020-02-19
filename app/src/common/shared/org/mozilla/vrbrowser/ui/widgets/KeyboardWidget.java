@@ -280,9 +280,7 @@ public class KeyboardWidget extends UIWidget implements CustomKeyboardView.OnKey
     protected void initializeWidgetPlacement(WidgetPlacement aPlacement) {
         Context context = getContext();
         aPlacement.width = getKeyboardWidth(WidgetPlacement.dpDimension(context, R.dimen.keyboard_alphabetic_width));
-        aPlacement.height = WidgetPlacement.dpDimension(context, R.dimen.keyboard_height);
-        aPlacement.height += WidgetPlacement.dpDimension(context, R.dimen.autocompletion_widget_line_height);
-        aPlacement.height += WidgetPlacement.dpDimension(context, R.dimen.keyboard_layout_padding);
+        aPlacement.height = getKeyboardHeight(WidgetPlacement.dpDimension(context, R.dimen.keyboard_height));
         aPlacement.anchorX = 0.5f;
         aPlacement.anchorY = 0.0f;
         aPlacement.parentAnchorY = 0.0f;
@@ -329,6 +327,13 @@ public class KeyboardWidget extends UIWidget implements CustomKeyboardView.OnKey
         width += WidgetPlacement.dpDimension(getContext(), R.dimen.keyboard_numeric_width);
         width += WidgetPlacement.dpDimension(getContext(), R.dimen.keyboard_key_width); // Close button
         return (int) width;
+    }
+
+    private int getKeyboardHeight(float aAlphabeticHeight) {
+        float height = aAlphabeticHeight;
+        height += WidgetPlacement.dpDimension(getContext(), R.dimen.autocompletion_widget_line_height);
+        height += WidgetPlacement.dpDimension(getContext(), R.dimen.keyboard_layout_padding);
+        return (int) height;
     }
 
     private void resetKeyboardLayout() {
@@ -723,19 +728,27 @@ public class KeyboardWidget extends UIWidget implements CustomKeyboardView.OnKey
 
         mCurrentKeyboard = aKeyboard;
         final int width = getKeyboardWidth(mCurrentKeyboard.getAlphabeticKeyboardWidth());
-        if (width != mWidgetPlacement.width) {
+        final int height = getKeyboardHeight(mCurrentKeyboard.getAlphabeticKeyboardHeight());
+
+        if (width != mWidgetPlacement.width || height != mWidgetPlacement.height) {
+            mWidgetPlacement.translationY = mCurrentKeyboard.getKeyboardTranslateYInWorld() - WidgetPlacement.unitFromMeters(getContext(), R.dimen.window_world_y);
             mWidgetPlacement.width = width;
-            float defaultWorldWidth = WidgetPlacement.floatDimension(getContext(), R.dimen.keyboard_world_width);
-            int defaultKeyboardWidth = getKeyboardWidth(mKeyboards.get(0).getAlphabeticKeyboardWidth());
+            mWidgetPlacement.height = height;
+            final float defaultWorldWidth = WidgetPlacement.floatDimension(getContext(), R.dimen.keyboard_world_width);
+            final int defaultKeyboardWidth = getKeyboardWidth(mKeyboards.get(0).getAlphabeticKeyboardWidth());
             mWidgetPlacement.worldWidth = defaultWorldWidth * ((float) width / (float) defaultKeyboardWidth);
             mWidgetManager.updateWidget(this);
             ViewGroup.LayoutParams params = mKeyboardContainer.getLayoutParams();
             params.width = WidgetPlacement.convertDpToPixel(getContext(), mCurrentKeyboard.getAlphabeticKeyboardWidth());
+            params.height = WidgetPlacement.convertDpToPixel(getContext(), mCurrentKeyboard.getAlphabeticKeyboardHeight());
             mKeyboardContainer.setLayoutParams(params);
         }
 
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)mKeyboardLayout.getLayoutParams();
         params.topMargin = mCurrentKeyboard.supportsAutoCompletion() ? WidgetPlacement.pixelDimension(getContext(), R.dimen.keyboard_margin_top_without_autocompletion) : 0;
+        if (height != params.height) {
+            params.height = WidgetPlacement.convertDpToPixel(getContext(), mCurrentKeyboard.getAlphabeticKeyboardHeight());
+        }
         mKeyboardLayout.setLayoutParams(params);
 
         SettingsStore.getInstance(getContext()).setSelectedKeyboard(aKeyboard.getLocale());
@@ -811,6 +824,25 @@ public class KeyboardWidget extends UIWidget implements CustomKeyboardView.OnKey
         Keyboard alphabetic = mCurrentKeyboard.getAlphabeticKeyboard();
         mKeyboardView.setKeyboard(current == alphabetic ? getSymbolsKeyboard() : alphabetic);
         mKeyboardView.setLayoutParams(mKeyboardView.getLayoutParams());
+
+        // Due to zh-tw keyboard uses the default keyboard layout as its symbol keyboard's layout,
+        // and their layout are different (4 rows vs. 5 rows). We need to do some adjustment here.
+        if (mCurrentKeyboard.getLocale() == Locale.TRADITIONAL_CHINESE) {
+            KeyboardInterface nextKeyboard = (current == alphabetic) ? mKeyboards.get(0) : mCurrentKeyboard;
+            final int width = getKeyboardWidth(nextKeyboard.getAlphabeticKeyboardWidth());
+            final int height = getKeyboardHeight(nextKeyboard.getAlphabeticKeyboardHeight());
+            mWidgetPlacement.width = width;
+            mWidgetPlacement.height = height;
+
+            final float defaultWorldWidth = WidgetPlacement.floatDimension(getContext(), R.dimen.keyboard_world_width);
+            final int defaultKeyboardWidth = getKeyboardWidth(mKeyboards.get(0).getAlphabeticKeyboardWidth());
+            mWidgetPlacement.worldWidth = defaultWorldWidth * ((float) width / (float) defaultKeyboardWidth);
+            mWidgetManager.updateWidget(this);
+            ViewGroup.LayoutParams params = mKeyboardContainer.getLayoutParams();
+            params.width = WidgetPlacement.convertDpToPixel(getContext(), nextKeyboard.getAlphabeticKeyboardWidth());
+            params.height = WidgetPlacement.convertDpToPixel(getContext(), nextKeyboard.getAlphabeticKeyboardHeight());
+            mKeyboardContainer.setLayoutParams(params);
+        }
         if (current == alphabetic) {
             mCurrentKeyboard.getAlphabeticKeyboard().setSpaceKeyLabel("");
         }
