@@ -314,6 +314,7 @@ public class WindowWidget extends UIWidget implements SessionChangeListener,
         super.onResume();
         if (isVisible() || mIsInVRVideoMode) {
             mSession.setActive(true);
+            callSurfaceChanged();
         }
     }
 
@@ -732,7 +733,7 @@ public class WindowWidget extends UIWidget implements SessionChangeListener,
     }
 
     private void callSurfaceChanged() {
-        if (mSession != null) {
+        if (mSession != null && mSurface != null) {
             mSession.surfaceChanged(mSurface, mBorderWidth, mBorderWidth, mWidth - mBorderWidth * 2, mHeight - mBorderWidth * 2);
             mSession.updateLastUse();
         }
